@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "chai": "^5.1.1",
+    "express": "^4.21.1"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "node bin/test.js",
+    "start": "node src/app.js",
+    "serve": "nodemon src/app.js localhost 8000"
+  },
+  "devDependencies": {
+    "@japa/api-client": "^2.0.3",
+    "@japa/assert": "^3.0.0",
+    "@japa/runner": "^3.1.4",
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.1.7"
+  }
+}
