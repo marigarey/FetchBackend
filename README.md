@@ -5,19 +5,29 @@
 ### Node.js
 Install Node.js using instructions from their [official website](https://nodejs.org/en/download/package-manager)
 
-### Dependencies
+### Download Dependencies
 ```sh
-npm install
+npm i
 ```
 
 ## Running the Program
 ```sh
-node src/app.js
+# calls the src/start.js file
+npm start
 ```
 
 ### Running Tests
 ```sh
-node test/test.js
+# automatically runs tests in the /test directory
+npm test
 ```
 
-## Ending the Program
+### Developer Mode
+```sh
+# calls: nodemon for localhost:8000
+npm run serve
+```
+
+> [!NOTE]
+> Everytime the test is run, make sure to delete all rows in the API,
+> otherwise the tests will fail :D

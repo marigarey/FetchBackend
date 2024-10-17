@@ -1,30 +1,36 @@
-//const sqlite3 = require('sqlite3').verbose()
-import sqlite3 from 'sqlite3'
-const db = new sqlite3.Database('src/database.sql')
+import Database from 'better-sqlite3'
+const db = new Database('database/rewards.sqlite3')
+const sql = "CREATE TABLE IF NOT EXISTS rewards (payer TEXT, points INTEGER, timestamp DATE);"
+db.exec(sql)
 
 export default class Services {
 
-    init = () => {
-        // set up the sql database
-        const sql = "CREATE TABLE IF NOT EXISTS rewards (payer TEXT, points INTEGER, timestamp DATE);"
-        db.run(sql)
-    }
-
+    /**
+     * Adds a transaction to the SQL database
+     * @param {string} payer 
+     * @param {number} points 
+     * @param {string} timestamp 
+     */
     addRewards = (payer, points, timestamp) => {
         // run the sql query with the new values
         const sql = `INSERT INTO rewards VALUES(?, ?, ?);`
-    
-        db.run(sql, [payer, points, timestamp])
+        const stmt = db.prepare(sql)
+        stmt.run(payer, points, timestamp)
     }
 
+    /**
+     * Compiles all the payer information into one dictionary
+     * @returns dictionary of points by payer
+     */
     balanceRewards = () => {
 
         const balance = {}
 
         // select all the rows in the rewards table
         const sql = "SELECT payer, points FROM rewards;"
+        const stmt = db.prepare(sql)
 
-        db.each(sql, (err, row) => {
+        for (const row of stmt.iterate()) {
             if (!row) {
             }
             else if (row.payer in balance) {
@@ -35,24 +41,28 @@ export default class Services {
                 // create a new object in balance with the payer and current points
                 balance[row.payer] = row.points
             }
-        })
+        }
 
         return balance
     }
 
+    /**
+     * Calculates if a user can spent a certain amount of point.
+     * If so, return array of spent points by payer and status code 200.
+     * Otherwise, return status code 400
+     * @param {Object<points : number>} spend 
+     * @returns Arrays of spent points by payer
+     */
     spendRewards = (spend) => {
         // keeps track of points spent per payer
-        let spent = []
-
+        let spent = {}
         // get most recent transactions
-        const sql = `SELECT points, payer FROM rewards ORDER BY timestamp ASC;`
-        db.each(sql, (err, row) => {
+        const sql = `SELECT points, payer FROM rewards ORDER BY timestamp ASC`
+        const stmt = db.prepare(sql)
+        for (const row of stmt.iterate()) {
             // check the current points
-            if (row && spend > 0) {
-                console.log('row')
-                console.log(row)
+            if (spend > 0) {
                 let difference = 0
-                
                 if (row.points >= spend) {
                     // current payer reward has more points than points to spend
                     difference = -spend
@@ -65,31 +75,40 @@ export default class Services {
                     difference = -row.points
 
                     // update points value
-                    spend = row.points - spend
+                    spend = spend - row.points
                 }
 
                 // add updated subtractions to spent
-                spent.push({
-                    "payer": row.payer,
-                    "points": difference
-                })
+                if (spent[row.payer] !== undefined) {
+                    spent[row.payer] += difference
+                }
+                else {
+                    spent[row.payer] = difference
+                }
+                
             }
-        })
+        }
 
         // check that all points have been spent
         if (spend == 0) {
-            // all points have been spent successfully
+            // reformat spent object
+            let response = []
 
-            // add the spent array to the sql database
-            const stmt = db.prepare("INSERT INTO rewards VALUES(?)")
-            for (let i = 0; i < spent.length; i++) {
-                stmt.run([spent[i].payer, spent[i].points])
+            for (var payer in spent) {
+                // re-format object to return
+                response.push({
+                    "payer" : payer,
+                    "points" : spent[payer]
+                })
+
+                // add information to sql database
+                const sql = `INSERT INTO rewards VALUES(?, ?, ?);`
+                const stmt = db.prepare(sql)
+                stmt.run(payer, spent[payer], null)
+
             }
-            stmt.finalize()
 
-            // return the list of spent points
-            return spent
-
+            return response
         }
     }
 }

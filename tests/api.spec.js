@@ -1,7 +1,11 @@
 import { test } from '@japa/runner'
 import { start, close } from '../src/app.js'
 
-test.group('normal execution', (group) => {
+/**
+ * Tests the Normal Execution of the API
+ */
+test.group('Normal Execution:', (group) => {
+
     group.setup(async () => {
         await start()
     })
@@ -10,7 +14,10 @@ test.group('normal execution', (group) => {
         await close()
     })
 
-    test('post /add first obj', async ({ client }) => {
+    /**
+     * Checks the API's ability to add one transactions
+     */
+    test('Post /add first obj', async ({ client }) => {
         const response = await client
         .post('/api/add')
         .json({
@@ -19,7 +26,11 @@ test.group('normal execution', (group) => {
         
         response.assertStatus(200)
     })
-    test('post /add all', async ({ client }) => {
+
+    /**
+     * Checks the API's ability to add multiple transactions
+     */
+    test('Post /add all', async ({ client }) => {
         const response1 = await client
         .post('/api/add')
         .json({
@@ -53,7 +64,10 @@ test.group('normal execution', (group) => {
         response4.assertStatus(200)
     })
     
-    test('post /spend', async ({ client }) => {
+    /**
+     * Checks that the API will spend points the user has
+     */
+    test('Post /spend', async ({ client }) => {
         const response = await client
         .post('/api/spend').json({
             "points" : 5000
@@ -69,7 +83,10 @@ test.group('normal execution', (group) => {
         response.assertBody(output)
     })
     
-    /**test('get /balance', async ({ client }) => {
+    /**
+     * Checks the API will return the correct balance
+     */
+    test('Get /balance', async ({ client }) => {
         const response = await client
         .get('/api/balance')
     
@@ -81,5 +98,30 @@ test.group('normal execution', (group) => {
     
         response.assertStatus(200)
         response.assertBody(output)
-    })**/
+    })
+})
+
+/**
+ * Tests an Edge Case of the API to make sure it fails
+ */
+test.group('Edge Cases:', (group) => {
+    group.setup(async () => {
+        await start()
+    })
+
+    group.teardown(async () => {
+        await close()
+    })
+
+    /**
+     * Checks that API fails to spend points the user does not have
+     */
+    test('Post /spend not enough points', async ({ client }) => {
+        const response = await client
+        .post('/api/spend').json({
+            "points" : 100000
+        })
+    
+        response.assertStatus(400)
+    })
 })

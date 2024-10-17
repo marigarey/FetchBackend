@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "test": "node bin/test.js",
-    "start": "node src/app.js",
+    "start": "node src/start.js",
     "serve": "nodemon src/app.js localhost 8000"
   },
   "devDependencies": {

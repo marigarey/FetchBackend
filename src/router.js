@@ -1,10 +1,12 @@
-import express, { response } from 'express'
+import express from 'express'
 import Services from './services.js'
 
 const router = express.Router()
 const services = new Services()
-services.init()
 
+/**
+ * Makes sure that router sets up each route
+ */
 router.use((response, request, next) => {
     next()
 })
@@ -58,6 +60,9 @@ router.post("/api/spend", (request, response) => {
     }
 })
 
+/**
+ * Returns list of points by payer
+ */
 router.get("/api/balance", (request, response) => {
     try {
         

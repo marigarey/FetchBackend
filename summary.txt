@@ -1,5 +1,26 @@
 1. Why did you choose the tools, libraries, and language you used for the coding exercise?
 
+I wanted to use a tool that I was familiar with and can work on a smaller scale since this is a smaller project.
+I chose to use Node.js and Express because I have used those tools to work with REST APIs in the past and knew I could
+get a working project together. I like how straight forward using Express is to set up an API and route it to a server.
+To keep track of the information going in and out of the API, I used better-sqlite3 because I found the methods were more
+straightforward than sqlite, and the documentation was easier to interpret. To make the tests, I used Japa because I thought
+the syntax was straight forward, and works for a light-load project like this one.
+
 2. What are the advantages and disadvantages of your solution?
 
+The big advantage is being able to run this API on your own machine, as well as the tests that come with the program to make sure
+that any changes I made did not mess up the program. Additionally, the better-sqlite3 allowed for fast, light weight use of SQL within
+the javascript without having to allocate a ton of storage to make this program run.
+
+The main disadvantage to my code is the lack of scalability of the SQL database. Though better-sqlite3 is faster than sqlite, how the database
+is set up (being stored in one file) brings a lot of downsides for larger use. On the same note of the SQL, when running the tests, you must manually
+purge the rows yourself. The reason why I didn't put a purge method within my code was I didn't want to give anyone the ability to remove all
+rows in a database. Even if this is a small code challenge, it seems silly to allow anyone the power to wip a database table clean.
+
 3. What has been a favorite school/personal project thus far? What about it that challenged you?
+
+My favorite personal project so far is my Canvas-Notion Integration that I created and designed myself! Though the coding and seeing my work
+come together was really fun and worthwile, the most rewarding part was seeing other people use my code to improve their life! I got to present
+my intergration at a Webinar hosted by Notion x Figma x The Browser Company to over 600 people, and share how I used code to make my life easier.
+Hearing from strangers on the internet thanking me for my work, really makes every challenge I overcame entirely worth it :)
